@@ -8,13 +8,7 @@ const QUEUE_NAME = "user_service_queue";
 
 export async function listenForClientEvents() {
     try {
-        const connection = await amqp.connect({
-            protocol: 'amqp',
-            hostname: process.env.RABBITMQ_HOST, 
-            port:5672,
-            username: process.env.RABBITMQ_USER || 'user',
-            password: process.env.RABBITMQ_PASSWORD || 'password',
-        });
+        const connection = await amqp.connect(RABBITMQ_URL);
         
         const channel = await connection.createChannel();
 

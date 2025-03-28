@@ -10,13 +10,7 @@ const RABBIT_EXCHANGE_PASS = "password_reset_event";
 const RABBIT_ROUTING_KEY_PASS = "password.reset";
 
 export async function userCreatedEvent(user) {
-    const connection = await amqp.connect({
-        protocol: 'amqp',
-        hostname: process.env.RABBITMQ_HOST || RABBITMQ_URL,
-        port:5672,
-        username: process.env.RABBITMQ_USER || 'admin',
-        password: process.env.RABBITMQ_PASSWORD || 'admin',
-    });
+    const connection = await amqp.connect(RABBITMQ_URL);
     const channel = await connection.createChannel();
 
     //Create exchange if it didn´t created
@@ -37,13 +31,7 @@ export async function userCreatedEvent(user) {
 // Función para enviar un evento de recuperación de contraseña con el token
 export async function sendPasswordResetEvent(user, resetToken) {
     try {
-        const connection = await amqp.connect({
-            protocol: 'amqp',
-            hostname: process.env.RABBITMQ_HOST || RABBITMQ_URL,
-            port:5672,
-            username: process.env.RABBITMQ_USER || 'admin',
-            password: process.env.RABBITMQ_PASSWORD || 'admin',
-        });
+        const connection = await amqp.connect(RABBITMQ_URL);
         const channel = await connection.createChannel();
 
         await channel.assertExchange(RABBIT_EXCHANGE_PASS, "topic", { durable: true });
