@@ -18,11 +18,11 @@ export const getUsers = async(req, res) => {
 
 export const createUsers = async (req, res) => {
     try {
-        const { password, username, phone } = req.body;
+        const { password, username, phone, userType } = req.body;
 
-        // Validar campos obligatorios
-        if (!phone || !username || !password) {
-            return res.status(400).json({ message: 'Teléfono, correo y contraseña son obligatorios' });
+        // Validar campos obligatorios (añade userType)
+        if (!phone || !username || !password || !userType) {
+            return res.status(400).json({ message: 'Teléfono, correo, contraseña y tipo de usuario son obligatorios' });
         }
 
         // Validar formato de correo 
@@ -34,6 +34,15 @@ export const createUsers = async (req, res) => {
         // Validar longitud de la contraseña
         if (password.length < 8) {
             return res.status(400).json({ message: 'La contraseña debe tener al menos 8 caracteres' });
+        }
+
+        // Validar opciones de userType (si es un ENUM)
+        const validUserTypes = ['client', 'provider']; // Ajusta según tu modelo
+        if (!validUserTypes.includes(userType)) {
+            return res.status(400).json({ 
+                message: 'Tipo de usuario inválido',
+                validTypes: validUserTypes
+            });
         }
 
         const existingPhone = await User.findOne({ where: { phone } });
@@ -52,12 +61,12 @@ export const createUsers = async (req, res) => {
             return res.status(400).json({ message: 'El nombre de usuario ya existe' });
         }
 
-        // Crear nuevo usuario
+        // Crear nuevo usuario (añade userType)
         const newUser = await User.create({
             phone,
             username,
             password,
-            status: true,
+            userType,            status: true,
             creationDate: new Date(),
         });
 
